@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WILX SHOP - Pembayaran via Saweria</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .header img {
+            width: 150px;
+        }
+        .game-info {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .payment-method {
+            text-align: center;
+            margin: 25px 0;
+        }
+        .btn-saweria {
+            background-color: #FF7A00;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .btn-saweria:hover {
+            background-color: #e06d00;
+            transform: translateY(-2px);
+        }
+        .btn-saweria img {
+            width: 20px;
+            margin-right: 10px;
+        }
+        .countdown {
+            text-align: center;
+            font-size: 18px;
+            margin: 20px 0;
+            color: #FF7A00;
+        }
+        .instructions {
+            background: #fff8f0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .status {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .paid {
+            background-color: #e6f7e6;
+            color: #2e7d32;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>WILX SHOP</h2>
+            <p>Topup Game via Saweria</p>
+        </div>
+        
+        <div class="game-info">
+            <h3>Detail Pesanan</h3>
+            <p><strong>Game:</strong> <span id="game-name">Mobile Legends</span></p>
+            <p><strong>Item:</strong> <span id="item-name">172 Diamond</span></p>
+            <p><strong>Harga:</strong> <span id="item-price">Rp 40.000</span></p>
+            <p><strong>Order ID:</strong> WILX-<span id="order-id">982736</span></p>
+        </div>
+        
+        <div class="payment-method">
+            <h3>Metode Pembayaran</h3>
+            <button class="btn-saweria" onclick="payWithSaweria()">
+                <img src="https://saweria.co/favicon.ico" alt="Saweria">
+                Bayar via Saweria
+            </button>
+        </div>
+        
+        <div class="countdown">
+            Selesaikan pembayaran dalam: <span id="time">10:00</span>
+        </div>
+        
+        <div class="instructions">
+            <h4>Petunjuk Pembayaran:</h4>
+            <ol>
+                <li>Klik tombol "Bayar via Saweria" di atas</li>
+                <li>Anda akan diarahkan ke halaman Saweria</li>
+                <li>Lakukan pembayaran sesuai nominal</li>
+                <li>Setelah pembayaran berhasil, diamond akan otomatis diproses</li>
+                <li>Jika ada masalah, hubungi WA: 0812-3456-7890</li>
+            </ol>
+        </div>
+        
+        <div id="payment-status" class="status"></div>
+    </div>
+
+    <script>
+        // Hitung mundur 10 menit
+        let timeLeft = 600;
+        const timer = setInterval(updateTimer, 1000);
+        
+        function updateTimer() {
+            timeLeft--;
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('time').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                document.getElementById('payment-status').innerHTML = 
+                    '<p class="status">Waktu pembayaran habis. Silakan buat order baru.</p>';
+            }
+        }
+        
+        // Fungsi untuk integrasi Saweria
+        function payWithSaweria() {
+            const game = document.getElementById('game-name').textContent;
+            const item = document.getElementById('item-name').textContent;
+            const price = document.getElementById('item-price').textContent.replace('Rp ', '');
+            const orderId = document.getElementById('order-id').textContent;
+            
+            // Format pesan untuk Saweria
+            const message = `Topup ${game} - ${item}%0AOrder ID: WILX-${orderId}%0A%0AJangan ubah nominal!`;
+            
+            // Ganti URL dengan link Saweria Anda
+            const saweriaUrl = `https://saweria.co/DanzSkulzo?amount=${price}&message=${message}`;
+            
+            // Buka tab baru ke Saweria
+            window.open(saweriaUrl, '_blank');
+            
+            // Mulai pengecekan pembayaran
+            startPaymentChecking(orderId);
+        }
+        
+        // Simulasi pengecekan pembayaran
+        function startPaymentChecking(orderId) {
+            // DI PRODUKSI, INI HARUS MENGHUBUNGI BACKEND ANDA
+            // Yang akan mengecek webhook dari Saweria
+            const checkInterval = setInterval(() => {
+                // Contoh sederhana:
+                // fetch(`check_payment.php?order_id=${orderId}`)
+                // .then(response => response.json())
+                // .then(data => {
+                //     if (data.status === 'paid') {
+                //         paymentSuccess();
+                //         clearInterval(checkInterval);
+                //     }
+                // });
+                
+                // Untuk demo, kita gunakan prompt
+                const isPaid = confirm(`Demo saja: Apakah pembayaran untuk order ${orderId} sudah dilakukan?`);
+                if (isPaid) {
+                    paymentSuccess();
+                    clearInterval(checkInterval);
+                    clearInterval(timer);
+                }
+            }, 10000); // Cek setiap 10 detik
+        }
+        
+        function paymentSuccess() {
+            document.getElementById('payment-status').innerHTML = 
+                '<p class="status paid">Pembayaran berhasil! Diamond akan diproses dalam 3 menit.</p>';
+        }
+    </script>
+</body>
+</html>
